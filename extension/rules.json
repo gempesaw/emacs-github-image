@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "https://github.com" },
+        { "header": "Referer", "operation": "set", "value": "https://github.com/" },
+        { "header": "Sec-Fetch-Site", "operation": "set", "value": "same-origin" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||github.com/upload/",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  }
+]

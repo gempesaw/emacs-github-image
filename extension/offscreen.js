@@ -72,7 +72,8 @@ async function uploadToGitHub(base64Data, filename) {
   });
   if (!policyResp.ok) {
     const text = await policyResp.text().catch(() => '');
-    throw new Error(`policies/assets ${policyResp.status}: ${text.slice(0, 200)}`);
+    console.error('[ghimg] policies/assets', policyResp.status, text);
+    throw new Error(`policies/assets ${policyResp.status}: ${summarize(text)}`);
   }
   const policy = await policyResp.json();
 
@@ -87,7 +88,8 @@ async function uploadToGitHub(base64Data, filename) {
   });
   if (!s3Resp.ok) {
     const text = await s3Resp.text().catch(() => '');
-    throw new Error(`s3 upload ${s3Resp.status}: ${text.slice(0, 200)}`);
+    console.error('[ghimg] s3 upload', s3Resp.status, text);
+    throw new Error(`s3 upload ${s3Resp.status}: ${summarize(text)}`);
   }
 
   const confirmForm = new FormData();
@@ -105,10 +107,19 @@ async function uploadToGitHub(base64Data, filename) {
   });
   if (!confirmResp.ok) {
     const text = await confirmResp.text().catch(() => '');
-    throw new Error(`confirm ${confirmResp.status}: ${text.slice(0, 200)}`);
+    console.error('[ghimg] confirm', confirmResp.status, text);
+    throw new Error(`confirm ${confirmResp.status}: ${summarize(text)}`);
   }
 
   return policy.asset.href;
+}
+
+function summarize(text) {
+  const titleMatch = text.match(/<title>([^<]+)<\/title>/i);
+  if (titleMatch) return titleMatch[1].trim();
+  const h1Match = text.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  if (h1Match) return h1Match[1].trim();
+  return text.slice(0, 200);
 }
 
 connect();
