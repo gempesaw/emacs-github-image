@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Emacs GitHub Image",
+  "version": "2.0.0",
+  "description": "Upload images to GitHub CDN from Emacs (direct API, no DOM scraping)",
+  "permissions": ["offscreen", "alarms"],
+  "host_permissions": [
+    "http://localhost/*",
+    "https://github.com/*",
+    "https://*.s3.amazonaws.com/*",
+    "https://*.githubusercontent.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
