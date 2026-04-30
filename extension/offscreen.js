@@ -39,7 +39,7 @@ function connect() {
 
     if (message.type === 'upload') {
       try {
-        const url = await uploadToGitHub(message.imageData, message.filename);
+        const url = await uploadToGitHub(message.imageData, message.filename, message.repositoryId);
         socket.send(JSON.stringify({ type: 'upload-result', id: message.id, success: true, url }));
       } catch (err) {
         console.error('[ghimg] upload failed', err);
@@ -49,7 +49,7 @@ function connect() {
   };
 }
 
-async function uploadToGitHub(base64Data, filename) {
+async function uploadToGitHub(base64Data, filename, repositoryId) {
   const binary = atob(base64Data);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -59,6 +59,7 @@ async function uploadToGitHub(base64Data, filename) {
   policyForm.append('name', file.name);
   policyForm.append('size', String(file.size));
   policyForm.append('content_type', file.type);
+  if (repositoryId) policyForm.append('repository_id', String(repositoryId));
 
   const policyResp = await fetch('https://github.com/upload/policies/assets', {
     method: 'POST',

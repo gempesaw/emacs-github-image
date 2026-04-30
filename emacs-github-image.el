@@ -11,6 +11,11 @@
 (require 'websocket)
 
 (defvar emacs-github-image-port 19287)
+(defvar emacs-github-image-repository-id "1225939076"
+  "Numeric GitHub repository ID to anchor uploads against.
+Without this, GitHub returns a legacy `user-images.githubusercontent.com'
+URL that fails with AccessDenied. Default is gempesaw/emacs-github-image.
+Look up another with: gh api repos/OWNER/REPO --jq .id")
 (defvar emacs-github-image--server nil)
 (defvar emacs-github-image--clients nil)
 (defvar emacs-github-image--pending-requests (make-hash-table :test 'equal))
@@ -85,7 +90,8 @@
                `((type . "upload")
                  (id . ,id)
                  (imageData . ,image-data)
-                 (filename . ,(format "image-%s.png" (format-time-string "%Y%m%d-%H%M%S")))))))
+                 (filename . ,(format "image-%s.png" (format-time-string "%Y%m%d-%H%M%S")))
+                 (repositoryId . ,emacs-github-image-repository-id)))))
     (puthash id callback emacs-github-image--pending-requests)
     (websocket-send-text (car emacs-github-image--clients) msg)))
 
